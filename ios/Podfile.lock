@@ -1,0 +1,59 @@
+PODS:
+  - Flutter (1.0.0)
+  - geolocator_apple (1.2.0):
+    - Flutter
+  - kakao_flutter_sdk (0.8.2):
+    - Flutter
+  - naver_map_plugin (0.9.4):
+    - Flutter
+    - NMapsMap
+  - NMapsMap (3.13.0)
+  - package_info_plus (0.4.5):
+    - Flutter
+  - shared_preferences (0.0.1):
+    - Flutter
+  - url_launcher (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - kakao_flutter_sdk (from `.symlinks/plugins/kakao_flutter_sdk/ios`)
+  - naver_map_plugin (from `.symlinks/plugins/naver_map_plugin/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+
+SPEC REPOS:
+  trunk:
+    - NMapsMap
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
+  kakao_flutter_sdk:
+    :path: ".symlinks/plugins/kakao_flutter_sdk/ios"
+  naver_map_plugin:
+    :path: ".symlinks/plugins/naver_map_plugin/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  geolocator_apple: b741765c55dc21950e3e106e8b3584e55cf81ce5
+  kakao_flutter_sdk: 99c58edf8b0996fb735cbe9e610096555ef7472e
+  naver_map_plugin: d1d67733c56b20b88270d9da51218e18fa916232
+  NMapsMap: 88b5bdac7087bfa99ab058ff5cdd95fb766e0e95
+  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
+  shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
+  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
+
+PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
+
+COCOAPODS: 1.10.1
