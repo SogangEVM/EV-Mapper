@@ -30,7 +30,7 @@ class EvmMap extends StatefulWidget {
 
 class _EVMMapState extends State<EvmMap> {
   //late final NaverMapController _mapController;
-  static const platform = const MethodChannel('samples.flutter.dev/tmapInvoke');
+  static const platform = const MethodChannel("samples.flutter.dev/tmapInvoke");
   double currentLng = 126.978442;
   double currentLat = 37.566570;
   bool _nightModeEnable = false;
@@ -44,7 +44,7 @@ class _EVMMapState extends State<EvmMap> {
   Future<void> _invokeTMap() async {
     try {
       await platform.invokeMethod(
-          'tmapInvoke', {"lng": "126.978442", "lat": "37.566570"});
+          "tmapInvoke", {"lng": "126.978442", "lat": "37.566570"});
     } on PlatformException catch (e) {
       print(e.message);
     }
@@ -66,13 +66,6 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> _tMapNavigationButtonClicked() async {
-    // try {
-    //   var url =
-    //       "https://apis.openapi.sk.com/tmap/app/routes?appKey=l7xxb841ff64eae6428a8b2ee688cd8abb94&lon=126.925989&lat=37.558175";
-    //   await launch(url);
-    // } catch (e) {
-    //   print(e);
-    // }
     await _invokeTMap();
   }
 
@@ -88,12 +81,10 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> _moveCurrentPosition() async {
-    print('1');
     await _getPosition();
     final _cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLat, currentLng));
     await _mapController.moveCamera(_cameraUpdate);
     await _mapController.setLocationTrackingMode(LocationTrackingMode.Follow);
-    print('2');
   }
 
   Future<void> _changeMapMode() async {
@@ -144,14 +135,14 @@ class _EVMMapState extends State<EvmMap> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () async {
-                  await _kakaoNavigationButtonClicked();
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.remove),
+              // IconButton(
+              //   icon: Icon(Icons.add),
+              //   onPressed: () async {
+              //     await _kakaoNavigationButtonClicked();
+              //   },
+              // ),
+              TextButton(
+                child: Text("Tmap안내"),
                 onPressed: () async {
                   await _tMapNavigationButtonClicked();
                 },

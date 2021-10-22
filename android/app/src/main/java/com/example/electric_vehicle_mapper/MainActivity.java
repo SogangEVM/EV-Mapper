@@ -29,8 +29,8 @@ public class MainActivity extends FlutterActivity {
                     public void onMethodCall(MethodCall call, Result result) {
 
                         if(call.method.equals("tmapInvoke")) {
-                            float lat = call.argument("lat");
-                            float lng = call.argument("lng");
+                            float lat = Float.parseFloat(call.argument("lat"));
+                            float lng = Float.parseFloat(call.argument("lng"));
                             invokeTmap(lat, lng);
                         } 
                     }
@@ -40,7 +40,7 @@ public class MainActivity extends FlutterActivity {
     private void invokeTmap(float lat, float lng) {
         TMapTapi tmaptapi = new TMapTapi(this);
         tmaptapi.setSKTMapAuthentication ("l7xxb841ff64eae6428a8b2ee688cd8abb94");
-        tmaptapi.invokeRoute("타월", lat, lng);
+        tmaptapi.invokeRoute("타월", lng, lat);
     }
 
 }
