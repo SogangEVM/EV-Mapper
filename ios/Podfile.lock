@@ -7,7 +7,7 @@ PODS:
   - naver_map_plugin (0.9.4):
     - Flutter
     - NMapsMap
-  - NMapsMap (3.13.0)
+  - NMapsMap (3.14.0)
   - package_info_plus (0.4.5):
     - Flutter
   - shared_preferences (0.0.1):
@@ -49,7 +49,7 @@ SPEC CHECKSUMS:
   geolocator_apple: b741765c55dc21950e3e106e8b3584e55cf81ce5
   kakao_flutter_sdk: 99c58edf8b0996fb735cbe9e610096555ef7472e
   naver_map_plugin: d1d67733c56b20b88270d9da51218e18fa916232
-  NMapsMap: 88b5bdac7087bfa99ab058ff5cdd95fb766e0e95
+  NMapsMap: 61c2abfc409bbcdc91583ccc455a5b6f64c7414e
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
