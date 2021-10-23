@@ -67,6 +67,7 @@ class _EVMMapState extends State<EvmMap> {
 
   Future<void> _tMapNavigationButtonClicked() async {
     await _invokeTMap();
+    print('hihihih');
   }
 
   Future<void> _getPosition() async {

@@ -1,9 +1,10 @@
 import UIKit
 import Flutter
-//import TMapSDK
+import TMapSDK
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, TMapTapiDelegate {
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -14,16 +15,23 @@ import Flutter
                                                     binaryMessenger: controller.binaryMessenger)
       tmapChannel.setMethodCallHandler({
           (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+          guard call.method == "tmapInvoke" else {
+              result(FlutterMethodNotImplemented)
+              return
+          }
+          //call.arguments[@"lat"]
+          self.invokeTmap(result: result)
       })
       
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+
+
+    private func invokeTmap(result: FlutterResult) {
+        let latlng  = CLLocationCoordinate2D(latitude: 37.558175, longitude: 126.925989)
+        TMapApi.setSKTMapAuthenticationWithDelegate(self, apiKey: "l7xxb841ff64eae6428a8b2ee688cd8abb94")
+        TMapApi.invokeRoute("시청역", coordinate: latlng)
+    }
 }
 
-//private func invokeTmap(result: FlutterResult) {
-//    var mapView = TMapView(frame: frame);
-//    self.view.addSubview(mapView);
-//    mapView.setAppKey("l7xxb841ff64eae6428a8b2ee688cd8abb94");
-//    TMapApi.invokeRoute("신도림역", coordinate:mapView.getCenter());
-//}
