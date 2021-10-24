@@ -33,5 +33,15 @@ ThemeData materialDarkTheme() {
       backgroundColor: Colors.white,
       splashColor: Colors.black.withOpacity(0.25),
     ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: evmColor.foregroundColor,
+      selectedIconTheme: IconThemeData(
+        size: 24.0,
+      ),
+      unselectedIconTheme: IconThemeData(
+        size: 20.0,
+      ),
+    ),
   );
 }
