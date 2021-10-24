@@ -24,6 +24,7 @@ class _ElectricVehicleMapperState extends State<ElectricVehicleMapper> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: materialThemes(),
+      darkTheme: materialDarkTheme(),
       home: MainPage(),
     );
   }
@@ -49,14 +50,6 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: evmColor.foregroundColor,
-        selectedIconTheme: IconThemeData(
-          size: 24.0,
-        ),
-        unselectedIconTheme: IconThemeData(
-          size: 20.0,
-        ),
         onTap: (int index) {
           setState(() {
             _screenIndex = index;
