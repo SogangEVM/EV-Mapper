@@ -14,7 +14,7 @@ import io.flutter.embedding.engine.FlutterEngine;
 public class MainActivity extends FlutterActivity {
 
     private static final String CHANNEL = "electric_vehicle_mapper/tmapInvoke";
-
+    TMapTapi tmaptapi = new TMapTapi(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,15 +33,22 @@ public class MainActivity extends FlutterActivity {
                             String destination = call.argument("destination");
                             float lat = Float.parseFloat(call.argument("lat"));
                             float lng = Float.parseFloat(call.argument("lng"));
-                            invokeTmap(lat, lng);
+                            boolean installed = invokeTmap(destination, lat, lng);
+                            result.success(installed);
                         } 
                     }
                 });
     }
 
-    private void invokeTmap(String destination,float lat, float lng) {
-        TMapTapi tmaptapi = new TMapTapi(this);
-        tmaptapi.invokeRoute(destination, lng, lat);
+    private boolean invokeTmap(String destination,float lat, float lng) {
+        boolean installed = tmaptapi.isTmapApplicationInstalled();
+        if(!installed) {
+            return false;
+        }
+        else {
+            tmaptapi.invokeRoute(destination, lng, lat);
+            return true;
+        }
     }
 
 }
