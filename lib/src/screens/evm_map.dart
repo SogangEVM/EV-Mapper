@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:kakao_flutter_sdk/navi.dart';
+import 'dart:io' show Platform;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
@@ -30,7 +32,8 @@ class EvmMap extends StatefulWidget {
 
 class _EVMMapState extends State<EvmMap> {
   //late final NaverMapController _mapController;
-  static const platform = const MethodChannel("samples.flutter.dev/tmapInvoke");
+  static const platform =
+      const MethodChannel("electric_vehicle_mapper/tmapInvoke");
   double currentLng = 126.978442;
   double currentLat = 37.566570;
   bool _nightModeEnable = false;
@@ -43,8 +46,65 @@ class _EVMMapState extends State<EvmMap> {
 
   Future<void> _invokeTMap() async {
     try {
-      await platform.invokeMethod(
-          "tmapInvoke", {"lng": "126.978442", "lat": "37.566570"});
+      var result = await platform.invokeMethod("tmapInvoke",
+          {"destination": "dest", "lng": "126.978442", "lat": "37.566570"});
+      if (!result)
+        Platform.isAndroid
+            ? showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Tmap이 설치되어 있지 않습니다"),
+                    content: Text(
+                      "Tmap을 설치하시겠습니까?",
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("취소"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextButton(
+                        child: Text("확인"),
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await launch(
+                              "https://apis.openapi.sk.com/tmap/app/execution?appKey=l7xxb841ff64eae6428a8b2ee688cd8abb94",
+                              forceWebView: true,
+                              forceSafariVC: true);
+                        },
+                      ),
+                    ],
+                  );
+                })
+            : showCupertinoDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return CupertinoAlertDialog(
+                    title: Text("Tmap이 설치되어 있지 않습니다"),
+                    content: Text("Tmap을 설치하시겠습니까?"),
+                    actions: [
+                      CupertinoDialogAction(
+                        child: Text("취소"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: Text("확인"),
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await launch(
+                              "https://apis.openapi.sk.com/tmap/app/execution?appKey=l7xxb841ff64eae6428a8b2ee688cd8abb94",
+                              forceWebView: true,
+                              forceSafariVC: true);
+                        },
+                      ),
+                    ],
+                  );
+                });
     } on PlatformException catch (e) {
       print(e.message);
     }
