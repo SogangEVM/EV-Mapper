@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:electric_vehicle_mapper/src/components/material_themes.dart';
-import 'package:electric_vehicle_mapper/src/components/color_code.dart'
-    as evmColor;
 import 'package:electric_vehicle_mapper/src/screens/evm_map.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_help.dart';
 import 'package:kakao_flutter_sdk/navi.dart';
@@ -24,6 +22,7 @@ class _ElectricVehicleMapperState extends State<ElectricVehicleMapper> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: materialThemes(),
+      darkTheme: materialDarkTheme(),
       home: MainPage(),
     );
   }
@@ -49,14 +48,6 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: evmColor.foregroundColor,
-        selectedIconTheme: IconThemeData(
-          size: 24.0,
-        ),
-        unselectedIconTheme: IconThemeData(
-          size: 20.0,
-        ),
         onTap: (int index) {
           setState(() {
             _screenIndex = index;

@@ -13,8 +13,8 @@ import io.flutter.embedding.engine.FlutterEngine;
 
 public class MainActivity extends FlutterActivity {
 
-    private static final String CHANNEL = "samples.flutter.dev/tmapInvoke";
-
+    private static final String CHANNEL = "electric_vehicle_mapper/tmapInvoke";
+    TMapTapi tmaptapi = new TMapTapi(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,6 +22,7 @@ public class MainActivity extends FlutterActivity {
         super.onCreate(savedInstanceState);
         FlutterEngine flutterEngine = new FlutterEngine(this);
         GeneratedPluginRegistrant.registerWith(flutterEngine);
+        tmaptapi.setSKTMapAuthentication ("l7xxb841ff64eae6428a8b2ee688cd8abb94");
 
         new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL).setMethodCallHandler(
                 new MethodCallHandler() {
@@ -29,18 +30,25 @@ public class MainActivity extends FlutterActivity {
                     public void onMethodCall(MethodCall call, Result result) {
 
                         if(call.method.equals("tmapInvoke")) {
+                            String destination = call.argument("destination");
                             float lat = Float.parseFloat(call.argument("lat"));
                             float lng = Float.parseFloat(call.argument("lng"));
-                            invokeTmap(lat, lng);
+                            boolean installed = invokeTmap(destination, lat, lng);
+                            result.success(installed);
                         } 
                     }
                 });
     }
 
-    private void invokeTmap(float lat, float lng) {
-        TMapTapi tmaptapi = new TMapTapi(this);
-        tmaptapi.setSKTMapAuthentication ("l7xxb841ff64eae6428a8b2ee688cd8abb94");
-        tmaptapi.invokeRoute("타월", lng, lat);
+    private boolean invokeTmap(String destination,float lat, float lng) {
+        boolean installed = tmaptapi.isTmapApplicationInstalled();
+        if(!installed) {
+            return false;
+        }
+        else {
+            tmaptapi.invokeRoute(destination, lng, lat);
+            return true;
+        }
     }
 
 }

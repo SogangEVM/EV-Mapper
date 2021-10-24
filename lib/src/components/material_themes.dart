@@ -4,22 +4,44 @@ import 'package:electric_vehicle_mapper/src/components/color_code.dart'
 
 ThemeData materialThemes() {
   return ThemeData(
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.white,
-      titleTextStyle: TextStyle(
-        color: evmColor.backgroundColor,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'NanumSquare',
-      ),
-      iconTheme: IconThemeData(color: evmColor.backgroundColor),
-      actionsIconTheme: IconThemeData(color: evmColor.backgroundColor),
-      elevation: 0.0,
-    ),
+    brightness: Brightness.light,
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       foregroundColor: evmColor.backgroundColor,
       backgroundColor: Colors.white,
       splashColor: Colors.black.withOpacity(0.25),
     ),
     fontFamily: 'NanumSquare',
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: evmColor.foregroundColor,
+      selectedIconTheme: IconThemeData(
+        size: 24.0,
+      ),
+      unselectedIconTheme: IconThemeData(
+        size: 20.0,
+      ),
+    ),
+  );
+}
+
+ThemeData materialDarkTheme() {
+  return ThemeData(
+    brightness: Brightness.dark,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      foregroundColor: evmColor.backgroundColor,
+      backgroundColor: Colors.white,
+      splashColor: Colors.black.withOpacity(0.25),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: evmColor.foregroundColor,
+      selectedIconTheme: IconThemeData(
+        size: 24.0,
+      ),
+      unselectedIconTheme: IconThemeData(
+        size: 20.0,
+      ),
+    ),
   );
 }

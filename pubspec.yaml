@@ -38,7 +38,7 @@ dependencies:
   http: ^0.13.3
   modal_bottom_sheet: ^2.0.0
   kakao_flutter_sdk: ^0.8.2
-  url_launcher: ^6.0.12
+  store_redirect: ^2.0.0
 
 
 dev_dependencies:

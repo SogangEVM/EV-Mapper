@@ -1,13 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_flutter_sdk/local.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:kakao_flutter_sdk/navi.dart';
+import 'package:store_redirect/store_redirect.dart';
+import 'dart:io' show Platform;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
@@ -20,6 +22,7 @@ final goalController = TextEditingController();
 final searchController = TextEditingController();
 late final _mapController;
 Set<PathOverlay> pathSet = Set();
+bool nightModeEnable = false;
 
 class EvmMap extends StatefulWidget {
   const EvmMap({Key? key}) : super(key: key);
@@ -30,21 +33,82 @@ class EvmMap extends StatefulWidget {
 
 class _EVMMapState extends State<EvmMap> {
   //late final NaverMapController _mapController;
-  static const platform = const MethodChannel("samples.flutter.dev/tmapInvoke");
+  static const platform =
+      const MethodChannel("electric_vehicle_mapper/tmapInvoke");
   double currentLng = 126.978442;
   double currentLat = 37.566570;
-  bool _nightModeEnable = false;
 
   @override
   void initState() {
     super.initState();
     KakaoContext.clientId = "4b9a4abdfc5d02f9b075402afb3d754e";
+    if (MediaQuery.of(context).platformBrightness == Brightness.light)
+      nightModeEnable = false;
+    else
+      nightModeEnable = true;
   }
 
   Future<void> _invokeTMap() async {
     try {
-      await platform.invokeMethod(
-          "tmapInvoke", {"lng": "126.978442", "lat": "37.566570"});
+      var result = await platform.invokeMethod("tmapInvoke",
+          {"destination": "dest", "lng": "126.978442", "lat": "37.566570"});
+      if (!result)
+        Platform.isAndroid
+            ? showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Tmap이 설치되어 있지 않습니다"),
+                    content: Text(
+                      "Tmap을 설치하시겠습니까?",
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text("취소"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      TextButton(
+                        child: Text("확인"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          StoreRedirect.redirect(
+                            androidAppId: "com.skt.tmap.ku",
+                            iOSAppId: "431589174",
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                })
+            : showCupertinoDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return CupertinoAlertDialog(
+                    title: Text("Tmap이 설치되어 있지 않습니다"),
+                    content: Text("Tmap을 설치하시겠습니까?"),
+                    actions: [
+                      CupertinoDialogAction(
+                        child: Text("취소"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      CupertinoDialogAction(
+                        child: Text("확인"),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          StoreRedirect.redirect(
+                            androidAppId: "com.skt.tmap.ku",
+                            iOSAppId: "431589174",
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                });
     } on PlatformException catch (e) {
       print(e.message);
     }
@@ -65,12 +129,7 @@ class _EVMMapState extends State<EvmMap> {
     }
   }
 
-  Future<void> _tMapNavigationButtonClicked() async {
-    await _invokeTMap();
-    print('hihihih');
-  }
-
-  Future<void> _getPosition() async {
+  Future<void> _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
     try {
@@ -82,7 +141,7 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> _moveCurrentPosition() async {
-    await _getPosition();
+    await _getLocation();
     final _cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLat, currentLng));
     await _mapController.moveCamera(_cameraUpdate);
     await _mapController.setLocationTrackingMode(LocationTrackingMode.Follow);
@@ -90,7 +149,7 @@ class _EVMMapState extends State<EvmMap> {
 
   Future<void> _changeMapMode() async {
     setState(() {
-      _nightModeEnable = !_nightModeEnable;
+      nightModeEnable = !nightModeEnable;
     });
   }
 
@@ -113,7 +172,7 @@ class _EVMMapState extends State<EvmMap> {
             await _moveCurrentPosition();
           },
           mapType: MapType.Navi,
-          nightModeEnable: _nightModeEnable,
+          nightModeEnable: nightModeEnable,
           locationButtonEnable: true,
           pathOverlays: pathSet,
           initLocationTrackingMode: LocationTrackingMode.Follow,
@@ -136,16 +195,10 @@ class _EVMMapState extends State<EvmMap> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // IconButton(
-              //   icon: Icon(Icons.add),
-              //   onPressed: () async {
-              //     await _kakaoNavigationButtonClicked();
-              //   },
-              // ),
               TextButton(
                 child: Text("Tmap안내"),
                 onPressed: () async {
-                  await _tMapNavigationButtonClicked();
+                  await _invokeTMap();
                 },
               ),
             ],
@@ -160,14 +213,14 @@ class _EVMMapState extends State<EvmMap> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                zoomButton('in'),
-                zoomButton('out'),
+                zoomButton("in"),
+                zoomButton("out"),
               ],
             ),
           ),
         ),
 
-        // Current Locatin, Night Mode, Favorites Buttons
+        // Night Mode, Favorites Buttons
         Align(
           alignment: Alignment.bottomRight,
           child: Padding(
@@ -177,15 +230,7 @@ class _EVMMapState extends State<EvmMap> {
               children: [
                 FloatingActionButton(
                   mini: true,
-                  child:
-                      Icon(Icons.my_location, color: evmColor.backgroundColor),
-                  onPressed: () async {
-                    await _moveCurrentPosition();
-                  },
-                ),
-                FloatingActionButton(
-                  mini: true,
-                  child: _nightModeEnable
+                  child: nightModeEnable
                       ? Icon(
                           Icons.nightlight,
                           color: evmColor.backgroundColor,
@@ -248,7 +293,7 @@ class _PlaceFindTextFieldState extends State<PlaceFindTextField> {
           child: Row(
             children: [
               Text(
-                '충전소/지역명 검색',
+                "충전소/지역명 검색",
                 style: TextStyle(
                   color: evmColor.backgroundColor,
                 ),
@@ -293,9 +338,9 @@ Widget zoomButton(String type) {
     child: TextButton(
       style: ButtonStyle(alignment: Alignment.center),
       onPressed: () async {
-        type == 'in' ? await _zoomIn() : await _zoomOut();
+        type == "in" ? await _zoomIn() : await _zoomOut();
       },
-      child: Icon(type == 'in' ? Icons.add_sharp : Icons.remove_sharp,
+      child: Icon(type == "in" ? Icons.add_sharp : Icons.remove_sharp,
           size: 18.0, color: evmColor.backgroundColor),
     ),
   );
