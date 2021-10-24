@@ -42,10 +42,12 @@ class _EVMMapState extends State<EvmMap> {
   void initState() {
     super.initState();
     KakaoContext.clientId = "4b9a4abdfc5d02f9b075402afb3d754e";
-    if (MediaQuery.of(context).platformBrightness == Brightness.light)
-      nightModeEnable = false;
-    else
-      nightModeEnable = true;
+    Future.delayed(Duration.zero, () {
+      if (MediaQuery.of(context).platformBrightness == Brightness.light)
+        nightModeEnable = false;
+      else
+        nightModeEnable = true;
+    });
   }
 
   Future<void> _invokeTMap() async {
@@ -58,9 +60,12 @@ class _EVMMapState extends State<EvmMap> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("Tmap이 설치되어 있지 않습니다"),
+                    title: Text(
+                      "TMAP이 설치되어 있지 않습니다.",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     content: Text(
-                      "Tmap을 설치하시겠습니까?",
+                      "TMAP을 설치하시겠습니까?",
                     ),
                     actions: [
                       TextButton(
@@ -87,8 +92,11 @@ class _EVMMapState extends State<EvmMap> {
                 context: context,
                 builder: (BuildContext context) {
                   return CupertinoAlertDialog(
-                    title: Text("Tmap이 설치되어 있지 않습니다"),
-                    content: Text("Tmap을 설치하시겠습니까?"),
+                    title: Text(
+                      "TMAP이 설치되어 있지 않습니다.",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    content: Text("TMAP을 설치하시겠습니까?"),
                     actions: [
                       CupertinoDialogAction(
                         child: Text("취소"),
