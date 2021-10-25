@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:electric_vehicle_mapper/src/components/material_themes.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_help.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:kakao_flutter_sdk/navi.dart';
 
 String clientId = '0i7ovndb4a';
@@ -41,6 +42,8 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     KakaoContext.clientId = "4b9a4abdfc5d02f9b075402afb3d754e";
+    darkMode =
+        SchedulerBinding.instance?.window.platformBrightness == Brightness.dark;
   }
 
   @override

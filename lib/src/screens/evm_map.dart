@@ -22,7 +22,7 @@ final goalController = TextEditingController();
 final searchController = TextEditingController();
 late final _mapController;
 Set<PathOverlay> pathSet = Set();
-bool nightModeEnable = false;
+bool darkMode = false;
 
 class EvmMap extends StatefulWidget {
   const EvmMap({Key? key}) : super(key: key);
@@ -42,12 +42,6 @@ class _EVMMapState extends State<EvmMap> {
   void initState() {
     super.initState();
     KakaoContext.clientId = "4b9a4abdfc5d02f9b075402afb3d754e";
-    Future.delayed(Duration.zero, () {
-      if (MediaQuery.of(context).platformBrightness == Brightness.light)
-        nightModeEnable = false;
-      else
-        nightModeEnable = true;
-    });
   }
 
   Future<void> _invokeTMap() async {
@@ -93,7 +87,7 @@ class _EVMMapState extends State<EvmMap> {
                 builder: (BuildContext context) {
                   return CupertinoAlertDialog(
                     title: Text(
-                      "TMAP이 설치되어 있지 않습니다.",
+                      "TMAP이 설치되어 있지 않습니다",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     content: Text("TMAP을 설치하시겠습니까?"),
@@ -137,6 +131,12 @@ class _EVMMapState extends State<EvmMap> {
     }
   }
 
+  Future<void> _changeMapMode() async {
+    setState(() {
+      darkMode = !darkMode;
+    });
+  }
+
   Future<void> _getLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
@@ -153,12 +153,6 @@ class _EVMMapState extends State<EvmMap> {
     final _cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLat, currentLng));
     await _mapController.moveCamera(_cameraUpdate);
     await _mapController.setLocationTrackingMode(LocationTrackingMode.Follow);
-  }
-
-  Future<void> _changeMapMode() async {
-    setState(() {
-      nightModeEnable = !nightModeEnable;
-    });
   }
 
   Future<void> drawRoute() async {
@@ -180,7 +174,7 @@ class _EVMMapState extends State<EvmMap> {
             await _moveCurrentPosition();
           },
           mapType: MapType.Navi,
-          nightModeEnable: nightModeEnable,
+          nightModeEnable: darkMode,
           locationButtonEnable: true,
           pathOverlays: pathSet,
           initLocationTrackingMode: LocationTrackingMode.Follow,
@@ -238,7 +232,7 @@ class _EVMMapState extends State<EvmMap> {
               children: [
                 FloatingActionButton(
                   mini: true,
-                  child: nightModeEnable
+                  child: darkMode
                       ? Icon(
                           Icons.nightlight,
                           color: evmColor.backgroundColor,
@@ -247,8 +241,10 @@ class _EVMMapState extends State<EvmMap> {
                           Icons.nightlight_outlined,
                           color: evmColor.backgroundColor,
                         ),
-                  onPressed: () {
-                    _changeMapMode();
+                  onPressed: () async {
+                    print(darkMode.toString());
+                    await _changeMapMode();
+                    print(darkMode.toString());
                   },
                 ),
                 FloatingActionButton(
