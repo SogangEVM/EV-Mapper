@@ -235,23 +235,21 @@ class _EVMMapState extends State<EvmMap> {
                   child: darkMode
                       ? Icon(
                           Icons.nightlight,
-                          color: evmColor.backgroundColor,
+                          color: evmColor.foregroundColor,
                         )
                       : Icon(
                           Icons.nightlight_outlined,
-                          color: evmColor.backgroundColor,
+                          color: evmColor.foregroundColor,
                         ),
                   onPressed: () async {
-                    print(darkMode.toString());
                     await _changeMapMode();
-                    print(darkMode.toString());
                   },
                 ),
                 FloatingActionButton(
                   mini: true,
                   child: Icon(
                     Icons.star_rounded,
-                    color: evmColor.backgroundColor,
+                    color: evmColor.foregroundColor,
                   ),
                   onPressed: () {
                     showCupertinoModalBottomSheet(
