@@ -1,4 +1,4 @@
-package com.example.electric_vehicle_mapper;
+package com.donghyuk.EVMap;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
