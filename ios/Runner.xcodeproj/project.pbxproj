@@ -15,6 +15,7 @@
 		E018DB20270DA205004D5CC0 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		E07157D527248AA6007D16D9 /* TMapSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E07157D227248A9A007D16D9 /* TMapSDK.framework */; platformFilter = ios; };
 		E07157D627248AA6007D16D9 /* TMapSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E07157D227248A9A007D16D9 /* TMapSDK.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E07290C527281CCD00B25AED /* splash_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = E07290C427281CCD00B25AED /* splash_logo.png */; };
 		F7F845D8E0D5BB180551B858 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A679E760B63FC7DFF206D1B6 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		AF2700C78700726376B93A1C /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		E07157D227248A9A007D16D9 /* TMapSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TMapSDK.framework; path = "../../[iOS_SWIFT]TmapSDK_2.8/배포/TMapSDK.framework"; sourceTree = "<group>"; };
 		E07157D427248A9F007D16D9 /* TMapSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TMapSDK.framework; sourceTree = "<group>"; };
+		E07290C427281CCD00B25AED /* splash_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = splash_logo.png; path = ../../../splash_logo.png; sourceTree = "<group>"; };
 		F51169FB9B3ED5527FDA5D88 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,6 +122,7 @@
 			children = (
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
+				E07290C427281CCD00B25AED /* splash_logo.png */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
@@ -197,6 +200,7 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				E07290C527281CCD00B25AED /* splash_logo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,7 +378,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.electricVehicleMapper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.EVMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -512,7 +516,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.electricVehicleMapper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.EVMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -541,7 +545,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.electricVehicleMapper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.donghyuk.EVMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

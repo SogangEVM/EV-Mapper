@@ -335,8 +335,8 @@ Widget zoomButton(String type) {
         color: evmColor.backgroundColor,
       ),
     ),
-    width: 36.0,
-    height: 38.0,
+    width: 38.0,
+    height: 40.0,
     child: TextButton(
       style: ButtonStyle(alignment: Alignment.center),
       onPressed: () async {
