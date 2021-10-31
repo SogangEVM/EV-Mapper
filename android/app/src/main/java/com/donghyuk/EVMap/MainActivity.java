@@ -13,7 +13,7 @@ import io.flutter.embedding.engine.FlutterEngine;
 
 public class MainActivity extends FlutterActivity {
 
-    private static final String CHANNEL = "electric_vehicle_mapper/tmapInvoke";
+    private static final String CHANNEL = "electric_vehicle_mapper/tmapChannel";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends FlutterActivity {
                     @Override
                     public void onMethodCall(MethodCall call, Result result) {
 
-                        if(call.method.equals("tmapInvoke")) {
+                        if(call.method.equals("invokeTmap")) {
                             String destination = call.argument("destination");
                             float lat = Float.parseFloat(call.argument("lat"));
                             float lng = Float.parseFloat(call.argument("lng"));
