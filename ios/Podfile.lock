@@ -1,8 +1,6 @@
 PODS:
   - Alamofire (5.4.4)
   - Flutter (1.0.0)
-  - geolocator_apple (1.2.0):
-    - Flutter
   - KakaoSDKAuth (2.8.2):
     - KakaoSDKCommon (= 2.8.2)
   - KakaoSDKCommon (2.8.2):
@@ -16,6 +14,8 @@ PODS:
     - KakaoSDKCommon/Common (= 2.8.2)
   - KakaoSDKUser (2.8.2):
     - KakaoSDKAuth (= 2.8.2)
+  - location (0.0.1):
+    - Flutter
   - naver_map_plugin (0.9.4):
     - Flutter
     - NMapsMap
@@ -25,10 +25,10 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - KakaoSDKCommon
   - KakaoSDKNavi
   - KakaoSDKUser
+  - location (from `.symlinks/plugins/location/ios`)
   - naver_map_plugin (from `.symlinks/plugins/naver_map_plugin/ios`)
   - store_redirect (from `.symlinks/plugins/store_redirect/ios`)
 
@@ -44,8 +44,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  geolocator_apple:
-    :path: ".symlinks/plugins/geolocator_apple/ios"
+  location:
+    :path: ".symlinks/plugins/location/ios"
   naver_map_plugin:
     :path: ".symlinks/plugins/naver_map_plugin/ios"
   store_redirect:
@@ -54,11 +54,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: f3b09a368f1582ab751b3fff5460276e0d2cf5c9
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  geolocator_apple: b741765c55dc21950e3e106e8b3584e55cf81ce5
   KakaoSDKAuth: 2b7e6998d7028cabd037ef8d0d2f987b4eec9f89
   KakaoSDKCommon: 1b5dc1c785688bed6d6747d05f2c8e08420f09ff
   KakaoSDKNavi: ac327fef89c85148914fa808ea094a1d8c87d2ea
   KakaoSDKUser: 937f1acc1380192d38483480d5bf01b141471829
+  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   naver_map_plugin: d1d67733c56b20b88270d9da51218e18fa916232
   NMapsMap: 61c2abfc409bbcdc91583ccc455a5b6f64c7414e
   store_redirect: 2977747cf81689a39bd62c248c2deacb7a0d131e

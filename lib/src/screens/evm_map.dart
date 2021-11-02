@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'dart:io' show Platform;
@@ -40,7 +40,6 @@ class _EVMMapState extends State<EvmMap> {
   @override
   void initState() {
     super.initState();
-    //KakaoContext.clientId = "4b9a4abdfc5d02f9b075402afb3d754e";
   }
 
   void _showNotInstalledDialog(bool result, String title, String content,
@@ -136,14 +135,17 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    try {
-      currentLat = position.latitude;
-      currentLng = position.longitude;
-    } on PlatformException catch (e) {
-      print(e);
-    }
+    LocationData location = await Location().getLocation();
+    // Position position = await Geolocator.getCurrentPosition(
+    //     desiredAccuracy: LocationAccuracy.high);
+    // try {
+    //   currentLat = position.latitude;
+    //   currentLng = position.longitude;
+    // } on PlatformException catch (e) {
+    //   print(e);
+    // }
+    currentLat = location.latitude!;
+    currentLng = location.longitude!;
   }
 
   Future<void> _moveCurrentPosition() async {
@@ -169,7 +171,11 @@ class _EVMMapState extends State<EvmMap> {
         NaverMap(
           onMapCreated: (controller) async {
             _mapController = controller;
+            DateTime before = DateTime.now();
+            print("위치읽기중");
             await _getLocation();
+            DateTime after = DateTime.now();
+            print(after.difference(before).inSeconds);
             print("위치읽기성공");
           },
           mapType: MapType.Navi,
