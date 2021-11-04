@@ -52,6 +52,9 @@ android {
 
 dependencies {
     implementation files('libs/com.skt.Tmap_1.69.jar')
+    implementation "com.kakao.sdk:v2-user:2.4.2" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-link:2.4.2" // 메시지(카카오링크)
+    implementation "com.kakao.sdk:v2-navi:2.4.2" // 카카오내비
 }
 
 flutter {
