@@ -136,14 +136,6 @@ class _EVMMapState extends State<EvmMap> {
 
   Future<void> _getLocation() async {
     LocationData location = await Location().getLocation();
-    // Position position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high);
-    // try {
-    //   currentLat = position.latitude;
-    //   currentLng = position.longitude;
-    // } on PlatformException catch (e) {
-    //   print(e);
-    // }
     currentLat = location.latitude!;
     currentLng = location.longitude!;
   }
