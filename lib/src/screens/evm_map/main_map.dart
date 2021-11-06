@@ -169,19 +169,21 @@ class _EVMMapState extends State<EvmMap> {
                 child: Text("마커클릭"),
                 onPressed: () async {
                   showBottomSheet(
-                      elevation: 0.0,
-                      backgroundColor: Colors.red,
+                      //elevation: 0.0,
+                      backgroundColor: Colors.transparent,
                       context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width - 25,
-                        maxHeight: 200.0,
-                      ),
-                      builder: (context) => Container(
-                            //color: Colors.grey[900],
-                            height: 250,
+                      builder: (context) => Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 15.0,
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: evmColor.foregroundColor,
+                              ),
+                              height: 200,
+                            ),
                           ));
                 },
               ),
