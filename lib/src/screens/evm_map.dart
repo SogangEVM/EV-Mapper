@@ -1,3 +1,4 @@
+import 'package:electric_vehicle_mapper/src/services/kakao_navi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -148,7 +149,8 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> drawRoute() async {
-    Paths paths = await fetchRoute(startController.text, goalController.text);
+    Paths paths =
+        await fetchRoad("126.917299,37.566935", "126.925989,37.558175");
     PathOverlay pathOverlay = PathOverlay(PathOverlayId('1'), paths.path);
     setState(() {
       pathSet.add(pathOverlay);
@@ -204,6 +206,12 @@ class _EVMMapState extends State<EvmMap> {
                 child: Text("Tmap안내"),
                 onPressed: () async {
                   await _invokeTmap();
+                },
+              ),
+              TextButton(
+                child: Text("도로생성"),
+                onPressed: () async {
+                  await drawRoute();
                 },
               ),
             ],
