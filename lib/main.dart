@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:electric_vehicle_mapper/src/components/material_themes.dart';
-import 'package:electric_vehicle_mapper/src/screens/evm_map.dart';
+import 'package:electric_vehicle_mapper/src/screens/evm_map/main_map.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_help.dart';
 import 'package:flutter/scheduler.dart';
 

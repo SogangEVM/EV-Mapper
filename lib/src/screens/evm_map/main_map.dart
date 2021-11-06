@@ -14,6 +14,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:store_redirect/store_redirect.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:naver_map_plugin/naver_map_plugin.dart';
+import 'package:electric_vehicle_mapper/src/screens/evm_map/searching_bar.dart';
 
 final startController = TextEditingController();
 final goalController = TextEditingController();
@@ -42,6 +43,7 @@ class _EVMMapState extends State<EvmMap> {
     super.initState();
   }
 
+  // Function for invoke kakaonavi application
   Future<void> _invokeKakaonavi(
       String destination, double destLat, double destLng) async {
     try {
@@ -59,6 +61,7 @@ class _EVMMapState extends State<EvmMap> {
     }
   }
 
+  // Function for invoke TMAP application
   Future<void> _invokeTmap(
       String destination, double destLat, double destLng) async {
     try {
@@ -74,13 +77,14 @@ class _EVMMapState extends State<EvmMap> {
     }
   }
 
+  // Function for draw path on Navermap
   Future<void> _drawPath(double destLat, double destLng) async {
     Paths _paths = await fetchPath(
         "${_currentLng},${_currentLat}", "${destLng},${destLat}");
     PathOverlay _pathOverlay = PathOverlay(PathOverlayId('1'), _paths.path);
     _pathOverlay.color = evmColor.foregroundColor;
-    double _latDiffer = (_currentLat - destLat).abs();
-    double _lngDiffer = (_currentLng - destLng).abs();
+    double _latDiffer = (_currentLat - destLat).abs() / 2;
+    double _lngDiffer = (_currentLng - destLng).abs() / 2;
     LatLngBounds _bounds = LatLngBounds(
         southwest: LatLng(min(_currentLat, destLat) - _latDiffer,
             min(_currentLng, destLng) - _lngDiffer),
@@ -94,12 +98,14 @@ class _EVMMapState extends State<EvmMap> {
     });
   }
 
+  // Function for change Navermap mode
   Future<void> _changeMapMode() async {
     setState(() {
       darkMode = !darkMode;
     });
   }
 
+  // Function for get user location
   Future<void> _getLocation() async {
     LocationData _location = await Location().getLocation();
     _currentLat = _location.latitude!;
@@ -131,44 +137,7 @@ class _EVMMapState extends State<EvmMap> {
         ),
 
         // Searching Bar
-        SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-            child: TextButton(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 0.4,
-                    color: evmColor.foregroundColor,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.white,
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        "충전소/지역명 검색",
-                        style: TextStyle(
-                          color: evmColor.backgroundColor,
-                        ),
-                      ),
-                      Spacer(),
-                      Icon(Icons.search, color: evmColor.foregroundColor),
-                    ],
-                  ),
-                ),
-              ),
-              onPressed: () {
-                showCupertinoModalBottomSheet(
-                  context: context,
-                  builder: (context) => Container(),
-                );
-              },
-            ),
-          ),
-        ),
+        searchingBar(context),
 
         Align(
           alignment: Alignment.centerLeft,
@@ -194,6 +163,26 @@ class _EVMMapState extends State<EvmMap> {
                 onPressed: () async {
                   await _drawPath(37.566570, 126.978442);
                   //await drawRoute(37.225895, 127.071593);
+                },
+              ),
+              TextButton(
+                child: Text("마커클릭"),
+                onPressed: () async {
+                  showBottomSheet(
+                      elevation: 0.0,
+                      backgroundColor: Colors.red,
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width - 25,
+                        maxHeight: 200.0,
+                      ),
+                      builder: (context) => Container(
+                            //color: Colors.grey[900],
+                            height: 250,
+                          ));
                 },
               ),
             ],

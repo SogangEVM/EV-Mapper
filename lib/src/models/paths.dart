@@ -2,11 +2,16 @@
 import 'package:naver_map_plugin/naver_map_plugin.dart';
 
 class Paths {
-  final int code;
+  final int resultCode;
   final List<LatLng> path;
+  final int distance;
+  final int duration;
+
   Paths({
-    required this.code,
+    required this.resultCode,
     required this.path,
+    required this.distance,
+    required this.duration,
   });
 
   factory Paths.fromJson(Map<String, dynamic> json) {
@@ -16,17 +21,20 @@ class Paths {
       pathList.add(LatLng(path[i][1], path[i][0]));
     }
     return Paths(
-      code: json['code'],
+      resultCode: json['resultCode'],
       path: pathList,
+      distance: 0,
+      duration: 0,
     );
   }
 
   factory Paths.fromKakao(Map<String, dynamic> json) {
     List<dynamic> roads = json["routes"][0]["sections"][0]["roads"];
-    int resultCode;
     List<LatLng> pathList = [];
+    int resultCode = json["routes"][0]["result_code"];
+    int distance = json["routes"][0]["summary"]["distance"];
+    int duration = json["routes"][0]["summary"]["duration"];
 
-    resultCode = json["routes"][0]["result_code"];
     for (int i = 0; i < roads.length; i++) {
       List<dynamic> vertexes = roads[i]["vertexes"];
       for (int j = 0; j < vertexes.length / 2; j++) {
@@ -34,8 +42,10 @@ class Paths {
       }
     }
     return Paths(
-      code: resultCode,
+      resultCode: resultCode,
       path: pathList,
+      distance: distance,
+      duration: duration,
     );
   }
 }
