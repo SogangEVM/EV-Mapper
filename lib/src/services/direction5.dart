@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:electric_vehicle_mapper/main.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
 
-Future<Paths> fetchRoute(String start, String goal) async {
+Future<Paths> fetchRo(String start, String goal) async {
   String direction5Url =
       'https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving';
   Map<String, String> queryParams = {

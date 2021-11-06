@@ -1,4 +1,9 @@
-import 'package:electric_vehicle_mapper/src/services/kakao_navi.dart';
+import 'dart:io' show Platform;
+import 'dart:math';
+import 'package:electric_vehicle_mapper/src/services/fetch_path.dart';
+import 'package:electric_vehicle_mapper/src/models/paths.dart';
+import 'package:electric_vehicle_mapper/src/components/color_code.dart'
+    as evmColor;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -7,18 +12,13 @@ import 'package:flutter/widgets.dart';
 import 'package:location/location.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:store_redirect/store_redirect.dart';
-import 'dart:io' show Platform;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:naver_map_plugin/naver_map_plugin.dart';
-import 'package:electric_vehicle_mapper/src/models/paths.dart';
-import 'package:electric_vehicle_mapper/src/services/direction5.dart';
-import 'package:electric_vehicle_mapper/src/components/color_code.dart'
-    as evmColor;
 
 final startController = TextEditingController();
 final goalController = TextEditingController();
 final searchController = TextEditingController();
-late final _mapController;
+late NaverMapController mapController;
 Set<PathOverlay> pathSet = Set();
 bool darkMode = false;
 
@@ -30,103 +30,68 @@ class EvmMap extends StatefulWidget {
 }
 
 class _EVMMapState extends State<EvmMap> {
-  //late final NaverMapController _mapController;
   static const _tmapChannel =
       const MethodChannel("electric_vehicle_mapper/tmapChannel");
   static const _kakaoNaviChannel =
       const MethodChannel("electric_vehicle_mapper/kakaonaviChannel");
-  double currentLat = 37.566570;
-  double currentLng = 126.978442;
+  double _currentLat = 37.566570;
+  double _currentLng = 126.978442;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void _showNotInstalledDialog(bool result, String title, String content,
-      String androidId, String iOSId) {
-    Widget _titleMessage = Text(title,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0));
-
-    Widget _contentMessage = Padding(
-      padding: EdgeInsets.only(
-        top: 10.0,
-      ),
-      child: Text(content),
-    );
-
-    Widget _confirmButton = TextButton(
-      child: Text("확인"),
-      onPressed: () {
-        Navigator.pop(context);
-        StoreRedirect.redirect(
-          androidAppId: androidId,
-          iOSAppId: iOSId,
-        );
-      },
-    );
-
-    Widget _cancelButton = TextButton(
-      child: Text("취소"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    if (!result)
-      Platform.isAndroid
-          ? showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: _titleMessage,
-                  content: _contentMessage,
-                  actions: [
-                    _cancelButton,
-                    _confirmButton,
-                  ],
-                );
-              })
-          : showCupertinoDialog(
-              barrierDismissible: true,
-              context: context,
-              builder: (BuildContext context) {
-                return CupertinoAlertDialog(
-                  title: _titleMessage,
-                  content: _contentMessage,
-                  actions: [
-                    _cancelButton,
-                    _confirmButton,
-                  ],
-                );
-              });
-  }
-
-  Future<void> _invokeKakaonavi() async {
+  Future<void> _invokeKakaonavi(
+      String destination, double destLat, double destLng) async {
     try {
       var result = await _kakaoNaviChannel.invokeMethod("invokeKakaonavi", {
-        "destination": "dest",
-        "startLat": currentLat.toString(),
-        "startLng": currentLng.toString(),
-        "destLat": "37.566570",
-        "destLng": "126.978442"
+        "destination": destination,
+        "startLat": "${_currentLat}",
+        "startLng": "${_currentLng}",
+        "destLat": "${destLat}",
+        "destLng": "${destLng}"
       });
-      _showNotInstalledDialog(result, "카카오내비가 설치되어 있지 않습니다.",
+      showNotInstalledDialog(context, result, "카카오내비가 설치되어 있지 않습니다.",
           "카카오내비를 설치하시겠습니까?", "com.locnall.KimGiSa", "417698849");
     } on PlatformException catch (e) {
       print(e.message);
     }
   }
 
-  Future<void> _invokeTmap() async {
+  Future<void> _invokeTmap(
+      String destination, double destLat, double destLng) async {
     try {
-      var result = await _tmapChannel.invokeMethod("invokeTmap",
-          {"destination": "dest", "lat": "37.566570", "lng": "126.978442"});
-      _showNotInstalledDialog(result, "TMAP이 설치되어 있지 않습니다.", "TMAP을 설치하시겠습니까?",
-          "com.skt.tmap.ku", "431589174");
+      var result = await _tmapChannel.invokeMethod("invokeTmap", {
+        "destination": destination,
+        "lat": "${destLat}",
+        "lng": "${destLng}"
+      });
+      showNotInstalledDialog(context, result, "TMAP이 설치되어 있지 않습니다.",
+          "TMAP을 설치하시겠습니까?", "com.skt.tmap.ku", "431589174");
     } on PlatformException catch (e) {
       print(e.message);
     }
+  }
+
+  Future<void> _drawPath(double destLat, double destLng) async {
+    Paths _paths = await fetchPath(
+        "${_currentLng},${_currentLat}", "${destLng},${destLat}");
+    PathOverlay _pathOverlay = PathOverlay(PathOverlayId('1'), _paths.path);
+    _pathOverlay.color = evmColor.foregroundColor;
+    double _latDiffer = (_currentLat - destLat).abs();
+    double _lngDiffer = (_currentLng - destLng).abs();
+    LatLngBounds _bounds = LatLngBounds(
+        southwest: LatLng(min(_currentLat, destLat) - _latDiffer,
+            min(_currentLng, destLng) - _lngDiffer),
+        northeast: LatLng(max(_currentLat, destLat) + _latDiffer,
+            max(_currentLng, destLng) + _lngDiffer));
+    CameraUpdate _cameraUpdate = CameraUpdate.fitBounds(_bounds);
+    await mapController.moveCamera(_cameraUpdate);
+
+    setState(() {
+      pathSet.add(_pathOverlay);
+    });
   }
 
   Future<void> _changeMapMode() async {
@@ -136,25 +101,9 @@ class _EVMMapState extends State<EvmMap> {
   }
 
   Future<void> _getLocation() async {
-    LocationData location = await Location().getLocation();
-    currentLat = location.latitude!;
-    currentLng = location.longitude!;
-  }
-
-  Future<void> _moveCurrentPosition() async {
-    await _getLocation();
-    final _cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLat, currentLng));
-    await _mapController.moveCamera(_cameraUpdate);
-    await _mapController.setLocationTrackingMode(LocationTrackingMode.Follow);
-  }
-
-  Future<void> drawRoute() async {
-    Paths paths =
-        await fetchRoad("126.917299,37.566935", "126.925989,37.558175");
-    PathOverlay pathOverlay = PathOverlay(PathOverlayId('1'), paths.path);
-    setState(() {
-      pathSet.add(pathOverlay);
-    });
+    LocationData _location = await Location().getLocation();
+    _currentLat = _location.latitude!;
+    _currentLng = _location.longitude!;
   }
 
   @override
@@ -164,13 +113,11 @@ class _EVMMapState extends State<EvmMap> {
         // NAVER Map
         NaverMap(
           onMapCreated: (controller) async {
-            _mapController = controller;
+            mapController = controller;
             DateTime before = DateTime.now();
-            print("위치읽기중");
             await _getLocation();
             DateTime after = DateTime.now();
-            print(after.difference(before).inSeconds);
-            print("위치읽기성공");
+            print(after.difference(before).inSeconds.toString() + "초 걸림");
           },
           mapType: MapType.Navi,
           nightModeEnable: darkMode,
@@ -178,7 +125,7 @@ class _EVMMapState extends State<EvmMap> {
           pathOverlays: pathSet,
           initLocationTrackingMode: LocationTrackingMode.Follow,
           initialCameraPosition: CameraPosition(
-            target: LatLng(currentLat, currentLng),
+            target: LatLng(_currentLat, _currentLng),
             zoom: 13,
           ),
         ),
@@ -187,7 +134,39 @@ class _EVMMapState extends State<EvmMap> {
         SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-            child: PlaceFindTextField(),
+            child: TextButton(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 0.4,
+                    color: evmColor.foregroundColor,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "충전소/지역명 검색",
+                        style: TextStyle(
+                          color: evmColor.backgroundColor,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(Icons.search, color: evmColor.foregroundColor),
+                    ],
+                  ),
+                ),
+              ),
+              onPressed: () {
+                showCupertinoModalBottomSheet(
+                  context: context,
+                  builder: (context) => Container(),
+                );
+              },
+            ),
           ),
         ),
 
@@ -199,19 +178,22 @@ class _EVMMapState extends State<EvmMap> {
               TextButton(
                 child: Text("Kakaonavi안내"),
                 onPressed: () async {
-                  await _invokeKakaonavi();
+                  await _invokeKakaonavi("EX1", 37.566570, 126.978442);
+                  //await _invokeKakaonavi("EX1", 37.225895, 127.071593);
                 },
               ),
               TextButton(
                 child: Text("Tmap안내"),
                 onPressed: () async {
-                  await _invokeTmap();
+                  await _invokeTmap("EX2", 37.566570, 126.978442);
+                  //await _invokeTmap("EX2", 37.225895, 127.071593);
                 },
               ),
               TextButton(
                 child: Text("도로생성"),
                 onPressed: () async {
-                  await drawRoute();
+                  await _drawPath(37.566570, 126.978442);
+                  //await drawRoute(37.225895, 127.071593);
                 },
               ),
             ],
@@ -226,8 +208,46 @@ class _EVMMapState extends State<EvmMap> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                zoomButton("in"),
-                zoomButton("out"),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      width: 0.1,
+                      color: evmColor.backgroundColor,
+                    ),
+                  ),
+                  width: 38.0,
+                  height: 40.0,
+                  child: TextButton(
+                    style: ButtonStyle(alignment: Alignment.center),
+                    onPressed: () async {
+                      final _cameraUpdate = CameraUpdate.zoomIn();
+                      await mapController.moveCamera(_cameraUpdate);
+                    },
+                    child: Icon(Icons.add_sharp,
+                        size: 18.0, color: evmColor.backgroundColor),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      width: 0.1,
+                      color: evmColor.backgroundColor,
+                    ),
+                  ),
+                  width: 38.0,
+                  height: 40.0,
+                  child: TextButton(
+                    style: ButtonStyle(alignment: Alignment.center),
+                    onPressed: () async {
+                      final _cameraUpdate = CameraUpdate.zoomOut();
+                      await mapController.moveCamera(_cameraUpdate);
+                    },
+                    child: Icon(Icons.remove_sharp,
+                        size: 18.0, color: evmColor.backgroundColor),
+                  ),
+                ),
               ],
             ),
           ),
@@ -281,80 +301,61 @@ class _EVMMapState extends State<EvmMap> {
   }
 }
 
-class PlaceFindTextField extends StatefulWidget {
-  const PlaceFindTextField({Key? key}) : super(key: key);
+void showNotInstalledDialog(BuildContext context, bool result, String title,
+    String content, String androidId, String iOSId) {
+  Widget _titleMessage = Text(title,
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0));
 
-  @override
-  _PlaceFindTextFieldState createState() => _PlaceFindTextFieldState();
-}
-
-class _PlaceFindTextFieldState extends State<PlaceFindTextField> {
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 0.4,
-            color: evmColor.foregroundColor,
-          ),
-          borderRadius: BorderRadius.circular(10.0),
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Row(
-            children: [
-              Text(
-                "충전소/지역명 검색",
-                style: TextStyle(
-                  color: evmColor.backgroundColor,
-                ),
-              ),
-              Spacer(),
-              Icon(Icons.search, color: evmColor.foregroundColor),
-            ],
-          ),
-        ),
-      ),
-      onPressed: () {
-        showCupertinoModalBottomSheet(
-          context: context,
-          builder: (context) => Container(),
-        );
-      },
-    );
-  }
-}
-
-Widget zoomButton(String type) {
-  _zoomIn() async {
-    final _cameraUpdate = CameraUpdate.zoomIn();
-    _mapController.moveCamera(_cameraUpdate);
-  }
-
-  _zoomOut() async {
-    final _cameraUpdate = CameraUpdate.zoomOut();
-    _mapController.moveCamera(_cameraUpdate);
-  }
-
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(
-        width: 0.1,
-        color: evmColor.backgroundColor,
-      ),
+  Widget _contentMessage = Padding(
+    padding: EdgeInsets.only(
+      top: 10.0,
     ),
-    width: 38.0,
-    height: 40.0,
-    child: TextButton(
-      style: ButtonStyle(alignment: Alignment.center),
-      onPressed: () async {
-        type == "in" ? await _zoomIn() : await _zoomOut();
-      },
-      child: Icon(type == "in" ? Icons.add_sharp : Icons.remove_sharp,
-          size: 18.0, color: evmColor.backgroundColor),
-    ),
+    child: Text(content),
   );
+
+  Widget _confirmButton = TextButton(
+    child: Text("확인"),
+    onPressed: () {
+      Navigator.pop(context);
+      StoreRedirect.redirect(
+        androidAppId: androidId,
+        iOSAppId: iOSId,
+      );
+    },
+  );
+
+  Widget _cancelButton = TextButton(
+    child: Text("취소"),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  );
+
+  if (!result)
+    Platform.isAndroid
+        ? showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: _titleMessage,
+                content: _contentMessage,
+                actions: [
+                  _cancelButton,
+                  _confirmButton,
+                ],
+              );
+            })
+        : showCupertinoDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: _titleMessage,
+                content: _contentMessage,
+                actions: [
+                  _cancelButton,
+                  _confirmButton,
+                ],
+              );
+            });
 }
