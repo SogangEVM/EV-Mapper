@@ -10,6 +10,15 @@ ThemeData materialThemes() {
       backgroundColor: Colors.white,
       splashColor: Colors.black.withOpacity(0.25),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.resolveWith(
+            (states) => evmColor.foregroundColor),
+        foregroundColor: MaterialStateProperty.resolveWith(
+          (states) => Colors.black,
+        ),
+      ),
+    ),
     fontFamily: 'NanumSquare',
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.white,

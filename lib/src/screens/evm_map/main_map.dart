@@ -112,6 +112,156 @@ class _EVMMapState extends State<EvmMap> {
     _currentLng = _location.longitude!;
   }
 
+  Future<void> _addStationCard(BuildContext context) async {
+    showBottomSheet(
+      context: context,
+      // backgroundColor: Colors.red,
+      // barrierColor: Colors.transparent,
+      //useRootNavigator: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+      ),
+      builder: (context) => Container(
+        height: 175.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "서울마포 코오롱하늘채아파트 A단지",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  Spacer(),
+                  Icon(Icons.star_border_outlined),
+                ],
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              Text("서울 마포구 연남로 52"),
+              SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                children: [
+                  Text(
+                    "상태미확인",
+                    style: TextStyle(
+                      color: Colors.orangeAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Text("완속 0/1"),
+                ],
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Center(
+                child: ElevatedButton.icon(
+                  style: ButtonStyle(),
+                  icon: Icon(Icons.near_me, size: 20),
+                  label: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                    ),
+                    child: Text(
+                      "0.5KM 안내 시작",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    showCupertinoDialog(
+                        barrierDismissible: true,
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            content: Row(
+                              children: [
+                                Column(
+                                  children: [
+                                    TextButton(
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Image(
+                                          image: AssetImage(
+                                              'images/kakaonavi_icon.png'),
+                                          width: 90.0,
+                                          height: 90.0,
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        await _invokeKakaonavi(
+                                            "서울마포 코오롱하늘채아파트 A단지",
+                                            37.5648202770,
+                                            126.9201570654);
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Text("카카오내비"),
+                                  ],
+                                ),
+                                Spacer(),
+                                Column(
+                                  children: [
+                                    TextButton(
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Image(
+                                          image: AssetImage(
+                                              'images/tmap_icon.png'),
+                                          width: 90.0,
+                                          height: 90.0,
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        await _invokeTmap("서울마포 코오롱하늘채아파트 A단지",
+                                            37.5648202770, 126.9201570654);
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 10.0,
+                                    ),
+                                    Text("티맵"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -134,6 +284,20 @@ class _EVMMapState extends State<EvmMap> {
             target: LatLng(_currentLat, _currentLng),
             zoom: 13,
           ),
+          markers: [
+            Marker(
+                markerId: '1', position: LatLng(37.5577362206, 126.9178351068)),
+            Marker(
+                markerId: '2', position: LatLng(37.5648202770, 126.9201570654)),
+            Marker(
+                markerId: '3', position: LatLng(37.5637954434, 126.9082018741)),
+            Marker(
+                markerId: '4', position: LatLng(37.5603113438, 126.9023171320)),
+            Marker(
+                markerId: '5', position: LatLng(37.5603473521, 126.9002320696)),
+            Marker(
+                markerId: '6', position: LatLng(37.5608435385, 126.9320907521)),
+          ],
         ),
 
         // Searching Bar
@@ -144,47 +308,17 @@ class _EVMMapState extends State<EvmMap> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // TextButton(
+              //   child: Text("도로생성"),
+              //   onPressed: () async {
+              //     await _drawPath(37.566570, 126.978442);
+              //     //await drawRoute(37.225895, 127.071593);
+              //   },
+              // ),
               TextButton(
-                child: Text("Kakaonavi안내"),
+                child: Text("'"),
                 onPressed: () async {
-                  await _invokeKakaonavi("EX1", 37.566570, 126.978442);
-                  //await _invokeKakaonavi("EX1", 37.225895, 127.071593);
-                },
-              ),
-              TextButton(
-                child: Text("Tmap안내"),
-                onPressed: () async {
-                  await _invokeTmap("EX2", 37.566570, 126.978442);
-                  //await _invokeTmap("EX2", 37.225895, 127.071593);
-                },
-              ),
-              TextButton(
-                child: Text("도로생성"),
-                onPressed: () async {
-                  await _drawPath(37.566570, 126.978442);
-                  //await drawRoute(37.225895, 127.071593);
-                },
-              ),
-              TextButton(
-                child: Text("마커클릭"),
-                onPressed: () async {
-                  showBottomSheet(
-                      //elevation: 0.0,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (context) => Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 15.0,
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: evmColor.foregroundColor,
-                              ),
-                              height: 200,
-                            ),
-                          ));
+                  await _addStationCard(context);
                 },
               ),
             ],
