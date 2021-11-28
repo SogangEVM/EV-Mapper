@@ -1,7 +1,9 @@
 import 'dart:io' show Platform;
 import 'dart:math';
 import 'package:electric_vehicle_mapper/src/services/fetch_path.dart';
+import 'package:electric_vehicle_mapper/src/services/fetch_station.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
+import 'package:electric_vehicle_mapper/src/models/station.dart';
 import 'package:electric_vehicle_mapper/src/components/color_code.dart'
     as evmColor;
 import 'package:flutter/cupertino.dart';
@@ -21,7 +23,10 @@ final goalController = TextEditingController();
 final searchController = TextEditingController();
 late NaverMapController mapController;
 Set<PathOverlay> pathSet = Set();
+//List<Station> stationSet = [];
+List<Marker> markerSet = [];
 bool darkMode = false;
+late OverlayImage markerIcon;
 
 class EvmMap extends StatefulWidget {
   const EvmMap({Key? key}) : super(key: key);
@@ -37,6 +42,7 @@ class _EVMMapState extends State<EvmMap> {
       const MethodChannel("electric_vehicle_mapper/kakaonaviChannel");
   double _currentLat = 37.566570;
   double _currentLng = 126.978442;
+  bool _showInfoWindow = false;
 
   @override
   void initState() {
@@ -97,6 +103,10 @@ class _EVMMapState extends State<EvmMap> {
       pathSet.add(_pathOverlay);
     });
   }
+
+  // Future<void> _fetchStation() async {
+
+  // }
 
   // Function for change Navermap mode
   Future<void> _changeMapMode() async {
@@ -274,6 +284,14 @@ class _EVMMapState extends State<EvmMap> {
             await _getLocation();
             DateTime after = DateTime.now();
             print(after.difference(before).inSeconds.toString() + "초 걸림");
+            markerIcon = await OverlayImage.fromAssetImage(
+                assetName: 'images/kakaonavi_icon.png');
+          },
+          onMapTap: (contorller) {
+            if (_showInfoWindow) {
+              Navigator.pop(context);
+              _showInfoWindow = false;
+            }
           },
           mapType: MapType.Navi,
           nightModeEnable: darkMode,
@@ -286,7 +304,24 @@ class _EVMMapState extends State<EvmMap> {
           ),
           markers: [
             Marker(
-                markerId: '1', position: LatLng(37.5577362206, 126.9178351068)),
+              markerId: '1',
+              position: LatLng(37.5577362206, 126.9178351068),
+              captionText: '코오롱 하늘채 a단지',
+              captionMinZoom: 11,
+              //icon: markerIcon,
+              onMarkerTab: (Marker? marker, Map<String, int?> mapper) {
+                _showInfoWindow = true;
+                _addStationCard(context);
+                print(marker!.markerId.toString());
+                print(mapper['width'].toString());
+                setState(() {
+                  marker.width = 100;
+                  marker.height = 100;
+                  mapper['width'] = 100;
+                  mapper['height'] = 100;
+                });
+              },
+            ),
             Marker(
                 markerId: '2', position: LatLng(37.5648202770, 126.9201570654)),
             Marker(
@@ -316,9 +351,15 @@ class _EVMMapState extends State<EvmMap> {
               //   },
               // ),
               TextButton(
-                child: Text("'"),
+                child: Text("dd"),
                 onPressed: () async {
                   await _addStationCard(context);
+                },
+              ),
+              TextButton(
+                child: Text("station"),
+                onPressed: () async {
+                  await fetchStation();
                 },
               ),
             ],
