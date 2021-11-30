@@ -1,6 +1,9 @@
-# electric_vehicle_mapper
+# Electric Vehicle Mapper
 
-A new Flutter project.
+Capstone Design II : EVM Project
+
+Flutter UI/UX App
+
 
 ## Getting Started
 
