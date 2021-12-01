@@ -26,7 +26,9 @@ late NaverMapController mapController;
 Set<PathOverlay> pathSet = Set();
 late Stations stations;
 List<Marker> allMarkerSet = [];
+List<Marker> filteredMarkerSet = [];
 List<Marker> markerSet = [];
+late OverlayImage overlayImage;
 
 var stationInfo = Map();
 
@@ -46,6 +48,9 @@ class _EVMMapState extends State<EvmMap> {
   @override
   void initState() {
     super.initState();
+    OverlayImage.fromAssetImage(assetName: 'images/marker.png').then((result) {
+      overlayImage = result;
+    });
     _fetchStation().then((result) {});
   }
 
@@ -70,32 +75,87 @@ class _EVMMapState extends State<EvmMap> {
     });
   }
 
+  Marker marker(Station station) {
+    return Marker(
+        markerId: station.statId,
+        position: LatLng(station.lat, station.lng),
+        iconTintColor: Color(0xff0000cc),
+        infoWindow: station.statNm,
+        icon: overlayImage,
+        onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
+          _showInfoWindow = true;
+          await mapController.moveCamera(
+            CameraUpdate.toCameraPosition(
+              CameraPosition(
+                target: LatLng(station.lat, station.lng),
+              ),
+            ),
+          );
+          await showStationInfo(context, currentLat, currentLng, station);
+        });
+  }
+
+  void _filtering(int type) {
+    int chType;
+    filteredMarkerSet = [];
+    if (type == 0) {
+      filteredMarkerSet = allMarkerSet;
+    } else if (type == 1) {
+      // DC차데모
+      for (int i = 0; i < stations.stationList.length; i++) {
+        chType = stations.stationList[i].chargerType;
+        if (chType == 1 || chType == 3 || chType == 5 || chType == 6) {
+          filteredMarkerSet.add(
+            allMarkerSet[i],
+          );
+        }
+      }
+    } else if (type == 2) {
+      // AC완속
+      for (int i = 0; i < stations.stationList.length; i++) {
+        chType = stations.stationList[i].chargerType;
+        if (chType == 2) {
+          filteredMarkerSet.add(
+            allMarkerSet[i],
+          );
+        }
+      }
+    } else if (type == 4) {
+      // DC콤보
+      for (int i = 0; i < stations.stationList.length; i++) {
+        chType = stations.stationList[i].chargerType;
+        if (chType == 4 || chType == 5 || chType == 6) {
+          filteredMarkerSet.add(
+            allMarkerSet[i],
+          );
+        }
+      }
+    } else if (type == 7) {
+      // AC3상
+      for (int i = 0; i < stations.stationList.length; i++) {
+        chType = stations.stationList[i].chargerType;
+        if (chType == 3 || chType == 6 || chType == 7) {
+          filteredMarkerSet.add(
+            allMarkerSet[i],
+          );
+        }
+      }
+    }
+    setState(() {});
+    Navigator.of(context).pop();
+  }
+
   // Function for fetch station markers
   Future<void> _fetchStation() async {
-    EasyLoading.show(status: "환경관리공단 데이터 불러오는중...");
+    EasyLoading.show(status: "환경관리공단 데이터를 불러오는중입니다");
     stations = await fetchStation();
     for (int i = 0; i < stations.stationList.length; i++) {
       Station station = stations.stationList[i];
       allMarkerSet.add(
-        Marker(
-            markerId: station.statId,
-            position: LatLng(station.lat, station.lng),
-            iconTintColor: Color(0xff0000cc),
-            infoWindow: station.statNm,
-            onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
-              _showInfoWindow = true;
-              await mapController.moveCamera(
-                CameraUpdate.toCameraPosition(
-                  CameraPosition(
-                    target: LatLng(station.lat, station.lng),
-                    zoom: 12.0,
-                  ),
-                ),
-              );
-              await showStationInfo(context, currentLat, currentLng, station);
-            }),
+        marker(station),
       );
     }
+    filteredMarkerSet = allMarkerSet;
     setState(() {});
     EasyLoading.dismiss();
   }
@@ -132,6 +192,7 @@ class _EVMMapState extends State<EvmMap> {
               Navigator.pop(context);
               _showInfoWindow = false;
             }
+            setState(() {});
           },
           mapType: MapType.Navi,
           nightModeEnable: darkMode,
@@ -142,30 +203,67 @@ class _EVMMapState extends State<EvmMap> {
             target: LatLng(currentLat, currentLng),
             zoom: 12,
           ),
-          markers: allMarkerSet,
+          markers: filteredMarkerSet,
         ),
 
         // Searching Bar
-        searchingBar(context),
-
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                child: Text("필터링"),
-                onPressed: () {
-                  setState(() {
-                    List<Marker> temp = allMarkerSet;
-                    allMarkerSet = [];
-                    for (int i = 0; i < temp.length; i++) {
-                      if (temp[i].markerId == '1') allMarkerSet.add(temp[i]);
-                    }
-                  });
-                },
+        SafeArea(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.reorder_rounded,
+                      color: evmColor.foregroundColor,
+                    ),
+                    onPressed: () {
+                      showCupertinoDialog(
+                        barrierDismissible: true,
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(actions: [
+                            CupertinoDialogAction(
+                              child: Text("전체"),
+                              onPressed: () {
+                                _filtering(0);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text("DC콤보"),
+                              onPressed: () {
+                                _filtering(4);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text("DC차데모"),
+                              onPressed: () {
+                                _filtering(1);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text("AC3상"),
+                              onPressed: () {
+                                _filtering(7);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text("AC완속"),
+                              onPressed: () {
+                                _filtering(2);
+                              },
+                            ),
+                          ]);
+                        },
+                      );
+                    },
+                  ),
+                  searchingBar(context),
+                ],
               ),
-            ],
+            ),
           ),
         ),
 
