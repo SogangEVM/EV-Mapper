@@ -7,7 +7,8 @@ Future<Stations> fetchStation() async {
   String stationUrl = "http://apis.data.go.kr/B552584/EvCharger/getChargerInfo";
   String serviceKey =
       "ServiceKey=5I4HAS4TDAPOOjW7RWQbNjNYlgTY0QRS1F5jMXFiR%2FwFjOeC57iCzUrefQ3t4jFMirvTIf4P0AAfMEMc0Q%2BsLA%3D%3D";
-  var requestUrl = Uri.parse(stationUrl + "?" + serviceKey);
+  var requestUrl =
+      Uri.parse(stationUrl + "?" + serviceKey + "&pageNo=1&numOfRows=9999");
 
   final response = await http.get(
     requestUrl,

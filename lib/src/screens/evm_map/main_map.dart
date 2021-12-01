@@ -80,12 +80,10 @@ class _EVMMapState extends State<EvmMap> {
         Marker(
             markerId: station.statId,
             position: LatLng(station.lat, station.lng),
-            captionText: station.statNm,
-            captionMinZoom: 11,
             iconTintColor: Color(0xff0000cc),
+            infoWindow: station.statNm,
             onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
               _showInfoWindow = true;
-              await showStationInfo(context, currentLat, currentLng, station);
               await mapController.moveCamera(
                 CameraUpdate.toCameraPosition(
                   CameraPosition(
@@ -94,6 +92,7 @@ class _EVMMapState extends State<EvmMap> {
                   ),
                 ),
               );
+              await showStationInfo(context, currentLat, currentLng, station);
             }),
       );
     }

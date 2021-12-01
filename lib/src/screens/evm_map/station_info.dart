@@ -33,8 +33,9 @@ List<String> chargerType = [
   "AC3상"
 ];
 
-Future<void> showStationInfo(BuildContext context, double currentLat,
+Future<List<String>> _fetchPathInfo(BuildContext context, double currentLat,
     double currentLng, Station station) async {
+  List<String> str = [];
   Paths path = await fetchPath(
       "${currentLng},${currentLat}", "${station.lng},${station.lat}");
 
@@ -49,20 +50,40 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
     duration = "${hour}시간 ${minute}분 ";
   else
     duration = "${minute}분 ";
-  showBottomSheet(
-    context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-    ),
-    builder: (context) => Container(
-      height: 175.0,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
-        child: Column(
+  str.add(distance);
+  str.add(duration);
+  return str;
+}
+
+Future<void> showStationInfo(BuildContext context, double currentLat,
+    double currentLng, Station station) async {
+  // Paths path = await fetchPath(
+  //     "${currentLng},${currentLat}", "${station.lng},${station.lat}");
+
+  Widget infoWidget = FutureBuilder(
+    future: _fetchPathInfo(context, currentLat, currentLng, station),
+    builder: (BuildContext context, AsyncSnapshot snapshot) {
+      if (snapshot.hasData == false) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 30.0,
+              width: 30.0,
+              child: CircularProgressIndicator(),
+            ),
+          ],
+        );
+      } else if (snapshot.hasError) {
+        return Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Error: ${snapshot.error}',
+            style: TextStyle(fontSize: 15),
+          ),
+        );
+      } else {
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -84,7 +105,7 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
                   width: 10.0,
                 ),
                 Icon(Icons.near_me, size: 20),
-                Text(distance + "Km"),
+                Text(snapshot.data[0] + "Km"),
                 Spacer(),
                 Icon(Icons.star_border_outlined),
               ],
@@ -92,10 +113,16 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
             SizedBox(
               height: 5.0,
             ),
-            Text(
-              "(" + station.useTime + ")",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  "(" + station.useTime + ")",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             SizedBox(
@@ -132,7 +159,7 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
                     horizontal: 20.0,
                   ),
                   child: Text(
-                    duration + "안내 시작",
+                    snapshot.data[1] + "안내 시작",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -145,7 +172,26 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
               ),
             ),
           ],
-        ),
+        );
+      }
+    },
+  );
+
+  showBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+    ),
+    builder: (context) => Container(
+      height: 175.0,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
+        child: infoWidget,
       ),
     ),
   );

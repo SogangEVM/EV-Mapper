@@ -13,6 +13,14 @@ void selectNavigationDialog(
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
+          actions: [
+            CupertinoDialogAction(
+              child: Text("취소"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
           content: Row(
             children: [
               Column(
@@ -28,7 +36,6 @@ void selectNavigationDialog(
                     ),
                     onPressed: () async {
                       await invokeKakaonavi(context, destination, lat, lng);
-                      //Navigator.of(context).pop();
                     },
                   ),
                   SizedBox(
@@ -51,7 +58,6 @@ void selectNavigationDialog(
                     ),
                     onPressed: () async {
                       await invokeTmap(context, destination, lat, lng);
-                      //Navigator.of(context).pop();
                     },
                   ),
                   SizedBox(
@@ -88,14 +94,12 @@ void showNotInstalledDialog(BuildContext context, bool result, String title,
         iOSAppId: iOSId,
       );
       Navigator.of(context).pop();
-      Navigator.of(context).pop();
     },
   );
 
   Widget _cancelButton = TextButton(
     child: Text("취소"),
     onPressed: () {
-      Navigator.of(context).pop();
       Navigator.of(context).pop();
     },
   );
