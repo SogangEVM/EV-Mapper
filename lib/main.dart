@@ -3,6 +3,7 @@ import 'package:electric_vehicle_mapper/src/components/material_themes.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map/main_map.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_help.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 String clientId = '0i7ovndb4a';
 String clientSecret = 'VIYmIJ6cjEk7DqhHNLDOdOVS8hKSAQElCQDTFc3O';
@@ -24,6 +25,7 @@ class _ElectricVehicleMapperState extends State<ElectricVehicleMapper> {
       theme: materialThemes(),
       darkTheme: materialDarkTheme(),
       home: MainPage(),
+      builder: EasyLoading.init(),
     );
   }
 }

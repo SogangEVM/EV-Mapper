@@ -6,7 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:electric_vehicle_mapper/src/services/invoke_navigation.dart';
 
-void selectNavigationDialog(BuildContext context) {
+void selectNavigationDialog(
+    BuildContext context, String destination, double lat, double lng) {
   showCupertinoDialog(
       barrierDismissible: true,
       context: context,
@@ -26,8 +27,7 @@ void selectNavigationDialog(BuildContext context) {
                       ),
                     ),
                     onPressed: () async {
-                      await invokeKakaonavi(context, "서울마포 코오롱하늘채아파트 A단지",
-                          37.5648202770, 126.9201570654);
+                      await invokeKakaonavi(context, destination, lat, lng);
                       //Navigator.of(context).pop();
                     },
                   ),
@@ -50,8 +50,7 @@ void selectNavigationDialog(BuildContext context) {
                       ),
                     ),
                     onPressed: () async {
-                      await invokeTmap(context, "서울마포 코오롱하늘채아파트 A단지",
-                          37.5648202770, 126.9201570654);
+                      await invokeTmap(context, destination, lat, lng);
                       //Navigator.of(context).pop();
                     },
                   ),

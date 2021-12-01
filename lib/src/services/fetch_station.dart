@@ -1,22 +1,22 @@
 import 'package:http/http.dart' as http;
 import 'dart:async';
-import 'dart:convert';
 import 'package:electric_vehicle_mapper/src/models/station.dart';
+import 'package:xml/xml.dart';
 
 Future<Stations> fetchStation() async {
-  String stationUrl = 'http://apis.data.go.kr/B552584/EvCharger/getChargerInfo';
+  String stationUrl = "http://apis.data.go.kr/B552584/EvCharger/getChargerInfo";
   String serviceKey =
-      '5I4HAS4TDAPOOjW7RWQbNjNYlgTY0QRS1F5jMXFiR%2FwFjOeC57iCzUrefQ3t4jFMirvTIf4P0AAfMEMc0Q%2BsLA%3D%3D';
-  // String encodeKey =
-  //     'ServiceKey=5I4HAS4TDAPOOjW7RWQbNjNYlgTY0QRS1F5jMXFiR%2FwFjOeC57iCzUrefQ3t4jFMirvTIf4P0AAfMEMc0Q%2BsLA%3D%3D';
-  var requestUrl = Uri.parse(stationUrl + '?' + 'ServiceKey=' + serviceKey);
+      "ServiceKey=5I4HAS4TDAPOOjW7RWQbNjNYlgTY0QRS1F5jMXFiR%2FwFjOeC57iCzUrefQ3t4jFMirvTIf4P0AAfMEMc0Q%2BsLA%3D%3D";
+  var requestUrl = Uri.parse(stationUrl + "?" + serviceKey);
 
-  //print(queryString);
   final response = await http.get(
     requestUrl,
   );
   if (response.statusCode == 200) {
-    return Stations.fromXml(response.body);
+    // final parsed = await json.decode(utf8.decode(response.bodyBytes));
+    final xmlDocument = XmlDocument.parse(response.body);
+    // return Stations.fromJson(parsed);
+    return Stations.fromXml(xmlDocument);
   } else {
     throw Exception("Unable to perform fetch route request!");
   }

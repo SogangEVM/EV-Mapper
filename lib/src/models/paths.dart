@@ -29,14 +29,14 @@ class Paths {
   }
 
   factory Paths.fromKakao(Map<String, dynamic> json) {
-    List<dynamic> roads = json["routes"][0]["sections"][0]["roads"];
+    List<dynamic> roads = json['routes'][0]['sections'][0]['roads'];
     List<LatLng> pathList = [];
-    int resultCode = json["routes"][0]["result_code"];
-    int distance = json["routes"][0]["summary"]["distance"];
-    int duration = json["routes"][0]["summary"]["duration"];
+    int resultCode = json['routes'][0]['result_code'];
+    int distance = json['routes'][0]['summary']['distance'];
+    int duration = json['routes'][0]['summary']['duration'];
 
     for (int i = 0; i < roads.length; i++) {
-      List<dynamic> vertexes = roads[i]["vertexes"];
+      List<dynamic> vertexes = roads[i]['vertexes'];
       for (int j = 0; j < vertexes.length / 2; j++) {
         pathList.add(LatLng(vertexes[j * 2 + 1], vertexes[j * 2]));
       }

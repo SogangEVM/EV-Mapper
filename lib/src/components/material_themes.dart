@@ -37,6 +37,10 @@ ThemeData materialThemes() {
 ThemeData materialDarkTheme() {
   return ThemeData(
     brightness: Brightness.dark,
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: evmColor.backgroundColor,
+      modalBackgroundColor: evmColor.backgroundColor,
+    ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       foregroundColor: evmColor.backgroundColor,
       backgroundColor: Colors.white,

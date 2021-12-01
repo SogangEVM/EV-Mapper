@@ -14,6 +14,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map/searching_bar.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'dart:math';
 
 final startController = TextEditingController();
 final goalController = TextEditingController();
@@ -22,9 +24,12 @@ double currentLat = 37.566570;
 double currentLng = 126.978442;
 late NaverMapController mapController;
 Set<PathOverlay> pathSet = Set();
-//List<Station> stationSet = [];
+late Stations stations;
 List<Marker> allMarkerSet = [];
 List<Marker> markerSet = [];
+
+var stationInfo = Map();
+
 bool darkMode = false;
 late OverlayImage markerIcon;
 
@@ -41,56 +46,60 @@ class _EVMMapState extends State<EvmMap> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      allMarkerSet = [
-        Marker(
-          markerId: '1',
-          position: LatLng(37.5577362206, 126.9178351068),
-          captionText: '코오롱 하늘채 a단지',
-          captionMinZoom: 11,
-          iconTintColor: Color(0xff1500ff),
-          onMarkerTab: (Marker? marker, Map<String, int?> mapper) {
-            _showInfoWindow = true;
-            showStationInfo(context);
-            print(marker!.markerId.toString());
-            print(mapper['width'].toString());
-            setState(() {
-              marker.width = 100;
-              marker.height = 100;
-              mapper['width'] = 100;
-              mapper['height'] = 100;
-            });
-          },
-        ),
-        Marker(markerId: '2', position: LatLng(37.5648202770, 126.9201570654)),
-        Marker(markerId: '3', position: LatLng(37.5637954434, 126.9082018741)),
-        Marker(markerId: '4', position: LatLng(37.5603113438, 126.9023171320)),
-        Marker(markerId: '5', position: LatLng(37.5603473521, 126.9002320696)),
-        Marker(markerId: '6', position: LatLng(37.5608435385, 126.9320907521)),
-      ];
-    });
+    _fetchStation().then((result) {});
   }
 
   // Function for draw path on Navermap
-  // Future<void> _drawPath(double destLat, double destLng) async {
-  //   Paths _paths = await fetchPath(
-  //       "${_currentLng},${_currentLat}", "${destLng},${destLat}");
-  //   PathOverlay _pathOverlay = PathOverlay(PathOverlayId('1'), _paths.path);
-  //   _pathOverlay.color = evmColor.foregroundColor;
-  //   double _latDiffer = (_currentLat - destLat).abs() / 2;
-  //   double _lngDiffer = (_currentLng - destLng).abs() / 2;
-  //   LatLngBounds _bounds = LatLngBounds(
-  //       southwest: LatLng(min(_currentLat, destLat) - _latDiffer,
-  //           min(_currentLng, destLng) - _lngDiffer),
-  //       northeast: LatLng(max(_currentLat, destLat) + _latDiffer,
-  //           max(_currentLng, destLng) + _lngDiffer));
-  //   CameraUpdate _cameraUpdate = CameraUpdate.fitBounds(_bounds);
-  //   await mapController.moveCamera(_cameraUpdate);
+  Future<void> _drawPath(double destLat, double destLng) async {
+    Paths _paths =
+        await fetchPath("${currentLng},${currentLat}", "${destLng},${destLat}");
+    PathOverlay _pathOverlay = PathOverlay(PathOverlayId('1'), _paths.path);
+    _pathOverlay.color = evmColor.foregroundColor;
+    double _latDiffer = (currentLat - destLat).abs() / 2;
+    double _lngDiffer = (currentLng - destLng).abs() / 2;
+    LatLngBounds _bounds = LatLngBounds(
+        southwest: LatLng(min(currentLat, destLat) - _latDiffer,
+            min(currentLng, destLng) - _lngDiffer),
+        northeast: LatLng(max(currentLat, destLat) + _latDiffer,
+            max(currentLng, destLng) + _lngDiffer));
+    CameraUpdate _cameraUpdate = CameraUpdate.fitBounds(_bounds);
+    await mapController.moveCamera(_cameraUpdate);
 
-  //   setState(() {
-  //     pathSet.add(_pathOverlay);
-  //   });
-  // }
+    setState(() {
+      pathSet.add(_pathOverlay);
+    });
+  }
+
+  // Function for fetch station markers
+  Future<void> _fetchStation() async {
+    EasyLoading.show(status: "환경관리공단 데이터 불러오는중...");
+    stations = await fetchStation();
+    for (int i = 0; i < stations.stationList.length; i++) {
+      Station station = stations.stationList[i];
+      allMarkerSet.add(
+        Marker(
+            markerId: station.statId,
+            position: LatLng(station.lat, station.lng),
+            captionText: station.statNm,
+            captionMinZoom: 11,
+            iconTintColor: Color(0xff0000cc),
+            onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
+              _showInfoWindow = true;
+              await showStationInfo(context, currentLat, currentLng, station);
+              await mapController.moveCamera(
+                CameraUpdate.toCameraPosition(
+                  CameraPosition(
+                    target: LatLng(station.lat, station.lng),
+                    zoom: 12.0,
+                  ),
+                ),
+              );
+            }),
+      );
+    }
+    setState(() {});
+    EasyLoading.dismiss();
+  }
 
   // Function for change Navermap mode
   Future<void> _changeMapMode() async {
@@ -132,7 +141,7 @@ class _EVMMapState extends State<EvmMap> {
           initLocationTrackingMode: LocationTrackingMode.Follow,
           initialCameraPosition: CameraPosition(
             target: LatLng(currentLat, currentLng),
-            zoom: 13,
+            zoom: 12,
           ),
           markers: allMarkerSet,
         ),
@@ -146,13 +155,7 @@ class _EVMMapState extends State<EvmMap> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                child: Text("station"),
-                onPressed: () async {
-                  await fetchStation();
-                },
-              ),
-              TextButton(
-                child: Text('필터링'),
+                child: Text("필터링"),
                 onPressed: () {
                   setState(() {
                     List<Marker> temp = allMarkerSet;
@@ -228,6 +231,16 @@ class _EVMMapState extends State<EvmMap> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                FloatingActionButton(
+                  mini: true,
+                  child: Icon(
+                    Icons.refresh_rounded,
+                    color: evmColor.foregroundColor,
+                  ),
+                  onPressed: () async {
+                    await _fetchStation();
+                  },
+                ),
                 FloatingActionButton(
                   mini: true,
                   child: darkMode
