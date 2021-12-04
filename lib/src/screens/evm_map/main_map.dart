@@ -16,6 +16,7 @@ import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map/searching_bar.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'dart:math';
+import 'dart:io' show Platform;
 
 final startController = TextEditingController();
 final goalController = TextEditingController();
@@ -27,8 +28,8 @@ Set<PathOverlay> pathSet = Set();
 late Stations stations;
 List<Marker> allMarkerSet = [];
 List<Marker> filteredMarkerSet = [];
-List<Marker> markerSet = [];
 late OverlayImage overlayImage;
+late double currentZoomLevel;
 
 var stationInfo = Map();
 
@@ -77,22 +78,28 @@ class _EVMMapState extends State<EvmMap> {
 
   Marker marker(Station station) {
     return Marker(
-        markerId: station.statId,
-        position: LatLng(station.lat, station.lng),
-        iconTintColor: Color(0xff0000cc),
-        infoWindow: station.statNm,
-        icon: overlayImage,
-        onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
-          _showInfoWindow = true;
-          await mapController.moveCamera(
-            CameraUpdate.toCameraPosition(
-              CameraPosition(
-                target: LatLng(station.lat, station.lng),
-              ),
-            ),
-          );
-          await showStationInfo(context, currentLat, currentLng, station);
+      width: 30,
+      height: 45,
+      markerId: station.statId,
+      position: LatLng(station.lat, station.lng),
+      infoWindow: station.statNm,
+      icon: overlayImage,
+      onMarkerTab: (Marker? marker, Map<String, int?> mapper) async {
+        _showInfoWindow = true;
+        await mapController.getCameraPosition().then((value) {
+          currentZoomLevel = value.zoom;
         });
+        await mapController.moveCamera(
+          CameraUpdate.toCameraPosition(
+            CameraPosition(
+              target: LatLng(station.lat, station.lng),
+              zoom: currentZoomLevel,
+            ),
+          ),
+        );
+        await showStationInfo(context, currentLat, currentLng, station);
+      },
+    );
   }
 
   void _filtering(int type) {
