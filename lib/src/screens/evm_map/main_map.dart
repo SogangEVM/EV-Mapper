@@ -16,7 +16,6 @@ import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map/searching_bar.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'dart:math';
-import 'dart:io' show Platform;
 
 final startController = TextEditingController();
 final goalController = TextEditingController();
@@ -162,8 +161,9 @@ class _EVMMapState extends State<EvmMap> {
         marker(station),
       );
     }
-    filteredMarkerSet = allMarkerSet;
-    setState(() {});
+    setState(() {
+      filteredMarkerSet = allMarkerSet;
+    });
     EasyLoading.dismiss();
   }
 
@@ -234,6 +234,7 @@ class _EVMMapState extends State<EvmMap> {
                           return CupertinoAlertDialog(actions: [
                             CupertinoDialogAction(
                               child: Text("전체"),
+                              isDefaultAction: true,
                               onPressed: () {
                                 _filtering(0);
                               },
@@ -260,6 +261,13 @@ class _EVMMapState extends State<EvmMap> {
                               child: Text("AC완속"),
                               onPressed: () {
                                 _filtering(2);
+                              },
+                            ),
+                            CupertinoDialogAction(
+                              child: Text("취소"),
+                              isDestructiveAction: true,
+                              onPressed: () {
+                                Navigator.of(context).pop();
                               },
                             ),
                           ]);

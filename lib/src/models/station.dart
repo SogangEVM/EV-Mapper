@@ -1,5 +1,27 @@
 import 'package:xml/xml.dart';
 
+class Station {
+  final String statNm;
+  final String statId;
+  final String addr;
+  final double lat;
+  final double lng;
+  final int chargerType;
+  final String useTime;
+  final int stat;
+
+  Station({
+    required this.statNm,
+    required this.statId,
+    required this.addr,
+    required this.lat,
+    required this.lng,
+    required this.chargerType,
+    required this.useTime,
+    required this.stat,
+  });
+}
+
 class Stations {
   List<Station> stationList;
 
@@ -27,8 +49,6 @@ class Stations {
       stationList.add(station);
     });
     return Stations(
-      // stationMap: stationMap,
-      // stationMarker: null,
       stationList: stationList,
     );
   }
@@ -63,26 +83,4 @@ class Stations {
   //     stationList: stationList,
   //   );
   // }
-}
-
-class Station {
-  final String statNm;
-  final String statId;
-  final String addr;
-  final double lat;
-  final double lng;
-  final int chargerType;
-  final String useTime;
-  final int stat;
-
-  Station({
-    required this.statNm,
-    required this.statId,
-    required this.addr,
-    required this.lat,
-    required this.lng,
-    required this.chargerType,
-    required this.useTime,
-    required this.stat,
-  });
 }

@@ -3,14 +3,11 @@ import 'package:electric_vehicle_mapper/src/services/fetch_path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
 import 'package:electric_vehicle_mapper/src/models/station.dart';
-import 'package:electric_vehicle_mapper/src/components/color_code.dart'
-    as evmColor;
 
-List<String> stat = [
+List<String> status = [
   "오류",
   "통신이상",
   "충전대기",
@@ -21,6 +18,18 @@ List<String> stat = [
   "오류",
   "오류",
   "상태미확인"
+];
+List<Color> statusColor = [
+  Colors.red,
+  Colors.red,
+  Colors.blueAccent,
+  Colors.green,
+  Colors.grey,
+  Colors.grey,
+  Colors.red,
+  Colors.red,
+  Colors.red,
+  Colors.orangeAccent,
 ];
 List<String> chargerType = [
   "오류",
@@ -57,9 +66,6 @@ Future<List<String>> _fetchPathInfo(BuildContext context, double currentLat,
 
 Future<void> showStationInfo(BuildContext context, double currentLat,
     double currentLng, Station station) async {
-  // Paths path = await fetchPath(
-  //     "${currentLng},${currentLat}", "${station.lng},${station.lat}");
-
   Widget infoWidget = FutureBuilder(
     future: _fetchPathInfo(context, currentLat, currentLng, station),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -118,7 +124,9 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Text(
-                  "(" + station.useTime + ")",
+                  station.useTime.isEmpty
+                      ? "정보없음"
+                      : "(" + station.useTime + ")",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -128,16 +136,25 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
             SizedBox(
               height: 5.0,
             ),
-            Text(station.addr),
+            // Text(station.addr),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  station.addr.isEmpty ? "정보없음" : station.addr,
+                ),
+              ),
+            ),
             SizedBox(
               height: 5.0,
             ),
             Row(
               children: [
                 Text(
-                  stat[station.stat],
+                  status[station.stat],
                   style: TextStyle(
-                    color: Colors.orangeAccent,
+                    color: statusColor[station.stat],
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
                   ),

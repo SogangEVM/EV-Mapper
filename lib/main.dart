@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:electric_vehicle_mapper/src/components/material_themes.dart';
 import 'package:electric_vehicle_mapper/src/screens/evm_map/main_map.dart';
-import 'package:electric_vehicle_mapper/src/screens/evm_help.dart';
+import 'package:electric_vehicle_mapper/src/screens/evm_help/evm_help.dart';
+import 'package:electric_vehicle_mapper/src/screens/evm_user/user_page.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -37,7 +38,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _screenIndex = 0;
-  final List<Widget> _screens = [EvmMap(), EvmHelp(), EvmHelp()];
+  final List<Widget> _screens = [EvmMap(), EvmHelp(), ProfilePage()];
 
   @override
   void initState() {
