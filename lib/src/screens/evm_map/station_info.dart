@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:electric_vehicle_mapper/src/components/dialogs.dart';
 import 'package:electric_vehicle_mapper/src/services/fetch_path.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +8,10 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:electric_vehicle_mapper/src/models/paths.dart';
 import 'package:electric_vehicle_mapper/src/models/station.dart';
+
+late DateTime now;
+late DateTime arriveTime;
+late bool isAm;
 
 List<String> status = [
   "오류",
@@ -19,6 +25,7 @@ List<String> status = [
   "오류",
   "상태미확인"
 ];
+
 List<Color> statusColor = [
   Colors.red,
   Colors.red,
@@ -44,6 +51,7 @@ List<String> chargerType = [
 
 Future<List<String>> _fetchPathInfo(BuildContext context, double currentLat,
     double currentLng, Station station) async {
+  now = DateTime.now();
   List<String> str = [];
   Paths path = await fetchPath(
       "${currentLng},${currentLat}", "${station.lng},${station.lat}");
@@ -61,11 +69,20 @@ Future<List<String>> _fetchPathInfo(BuildContext context, double currentLat,
     duration = "${minute}분 ";
   str.add(distance);
   str.add(duration);
+  arriveTime = now.add(Duration(hours: hour));
+  arriveTime = arriveTime.add(Duration(minutes: minute));
+  if (arriveTime.hour > 12)
+    isAm = false;
+  else
+    isAm = true;
   return str;
 }
 
 Future<void> showStationInfo(BuildContext context, double currentLat,
     double currentLng, Station station) async {
+  Random r = new Random();
+  double falseProbability = .9;
+  bool booleanResult = r.nextDouble() > falseProbability;
   Widget infoWidget = FutureBuilder(
     future: _fetchPathInfo(context, currentLat, currentLng, station),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -173,7 +190,7 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
                 style: ButtonStyle(),
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 20.0,
+                    horizontal: 15.0,
                   ),
                   child: Text(
                     snapshot.data[1] + "안내 시작",
@@ -188,6 +205,35 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
                 },
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  isAm
+                      ? "오전 ${arriveTime.hour}시 ${arriveTime.minute}분 예상포화도 : "
+                      : "오후 ${arriveTime.hour - 12}시 ${arriveTime.minute}분 예상포화도 : ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 10.0,
+                  ),
+                ),
+                !booleanResult
+                    ? Text(
+                        "원활",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 10.0,
+                        ),
+                      )
+                    : Text(
+                        "중간",
+                        style: TextStyle(
+                          color: Colors.orangeAccent,
+                          fontSize: 10.0,
+                        ),
+                      ),
+              ],
+            ),
           ],
         );
       }
@@ -201,7 +247,7 @@ Future<void> showStationInfo(BuildContext context, double currentLat,
           topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
     ),
     builder: (context) => Container(
-      height: 175.0,
+      height: 185.0,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.0),

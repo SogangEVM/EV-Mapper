@@ -17,12 +17,12 @@ class EvmHelp extends StatelessWidget {
             child: Column(
               children: [
                 TabBar(
-                  //labelColor: Color(0xFF343434),
                   indicator: UnderlineTabIndicator(
                     borderSide: BorderSide(color: Colors.white, width: 3.0),
                     insets: EdgeInsets.fromLTRB(50.0, 0.0, 50.0, 0.0),
                   ),
-                  unselectedLabelColor: Color(0xFFc9c9c9),
+                  unselectedLabelColor: Colors.grey[400],
+                  //labelColor: Colors.white,
                   tabs: [
                     Tab(
                       text: "충전요금",

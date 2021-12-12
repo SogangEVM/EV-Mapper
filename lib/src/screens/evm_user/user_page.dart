@@ -3,7 +3,7 @@ import 'package:electric_vehicle_mapper/src/models/user.dart';
 import 'package:electric_vehicle_mapper/src/components/color_code.dart'
     as evmColor;
 
-final user = User(name: "정동혁", email: "jted0537@gmail.com");
+final user = User(name: "Donghyuk", email: "jted0537@gmail.com");
 
 class ProfilePage extends StatefulWidget {
   @override
