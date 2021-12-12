@@ -226,7 +226,17 @@ class _MainPageState extends State<MainPage> {
 ```
 ## Demo
 
-![application_demo](https://user-images.githubusercontent.com/65856090/145716628-02993727-2e15-4d44-850e-119d37d6afd6.gif)
+### Launch
+![app demo1](https://user-images.githubusercontent.com/65856090/145717079-44f4ed87-e3e4-4d3e-aa9f-20c9c92e0c90.gif)
+
+### Menu
+![app demo2](https://user-images.githubusercontent.com/65856090/145717081-eccb74ca-1e03-4f72-afc5-d5818102ba82.gif)
+
+### Show Station Info
+![app demo3](https://user-images.githubusercontent.com/65856090/145717085-d461e709-b149-41ee-baeb-f7cfd97023ca.gif)
+
+### Move to Navigation Application
+![app demo4](https://user-images.githubusercontent.com/65856090/145717090-92306ba1-8ead-4b0e-a27a-b1ed87891463.gif)
 
 
 ## Wiki
